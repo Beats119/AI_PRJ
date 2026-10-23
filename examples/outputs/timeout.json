@@ -1,0 +1,305 @@
+{
+ "evaluation_id": "eval-704fc6a112be",
+ "submission_name": "timeout.c",
+ "submission_hash": "sha256:1feab3b1264ccad091f2c5ab026449f53e049caa2bd0901d15f8b2d03deb8b40",
+ "assignment_hash": "sha256:85528599693595a9fbb2878ef6a832d827d25eb9d1bd433c7ce381569f7f08a5",
+ "rules_hash": "sha256:34a95d23af29cd7b4f908e70217d574f78b65002318d4b79a3505822726496a6",
+ "overall_status": "partial",
+ "overall_grade": "53.0",
+ "metric_results": [
+  {
+   "analyzer_id": "io_tests",
+   "metric_name": "correctness",
+   "status": "skipped",
+   "score": null,
+   "evidence": {},
+   "feedback": "",
+   "confidence": null,
+   "missing_reason": "student_timeout",
+   "diagnostics": [
+    "smoke run timed out (suspected infinite loop); execution-dependent metric skipped"
+   ],
+   "tool_metadata": {}
+  },
+  {
+   "analyzer_id": "compiler_warnings",
+   "metric_name": "syntax",
+   "status": "passed",
+   "score": "1",
+   "evidence": {
+    "flags": "-Wall -Wextra -Werror -std=c11",
+    "strict_werror_compile_passed": true,
+    "warnings": 0,
+    "errors": 0,
+    "warning_lines": [],
+    "diagnostics_excerpt": ""
+   },
+   "feedback": "clean compile under -Wall -Wextra -Werror -std=c11 (warnings are errors)",
+   "confidence": null,
+   "missing_reason": "none",
+   "diagnostics": [],
+   "tool_metadata": {}
+  },
+  {
+   "analyzer_id": "static_analysis",
+   "metric_name": "structure",
+   "status": "passed",
+   "score": "1",
+   "evidence": {
+    "parser": "builtin-heuristic (cppcheck/lizard not required)",
+    "max_cyclomatic": 8,
+    "max_function_length": 40,
+    "functions": [
+     {
+      "function": "main",
+      "lines": 11,
+      "cyclomatic": 3,
+      "problems": [],
+      "suggested_fixes": []
+     }
+    ]
+   },
+   "feedback": "1/1 functions within thresholds (cyclomatic <= 8, length <= 40 lines). Most complex: main (cyclomatic 3).",
+   "confidence": null,
+   "missing_reason": "none",
+   "diagnostics": [],
+   "tool_metadata": {}
+  },
+  {
+   "analyzer_id": "function_split",
+   "metric_name": "modularity",
+   "status": "failed",
+   "score": "0.5",
+   "evidence": {
+    "functions": [
+     "main"
+    ],
+    "helpers": [],
+    "min_functions": 2
+   },
+   "feedback": "found 1 function(s) (main); the rules expect at least 2 including helper functions.",
+   "confidence": null,
+   "missing_reason": "none",
+   "diagnostics": [],
+   "tool_metadata": {}
+  },
+  {
+   "analyzer_id": "edge_case_runner",
+   "metric_name": "logical",
+   "status": "skipped",
+   "score": null,
+   "evidence": {},
+   "feedback": "",
+   "confidence": null,
+   "missing_reason": "student_timeout",
+   "diagnostics": [
+    "smoke run timed out (suspected infinite loop); execution-dependent metric skipped"
+   ],
+   "tool_metadata": {}
+  },
+  {
+   "analyzer_id": "complexity_estimator",
+   "metric_name": "complexity",
+   "status": "passed",
+   "score": "1",
+   "evidence": {
+    "static": {
+     "functions": [
+      {
+       "function": "main",
+       "loop_depth": 0,
+       "recursive": false
+      }
+     ],
+     "method": "static loop-nesting heuristic"
+    },
+    "required": "O(1)",
+    "estimated": "O(1)"
+   },
+   "feedback": "estimated complexity O(1) (static heuristic); required O(1)",
+   "confidence": null,
+   "missing_reason": "none",
+   "diagnostics": [],
+   "tool_metadata": {}
+  },
+  {
+   "analyzer_id": "sanitizer_run",
+   "metric_name": "memory_safety",
+   "status": "skipped",
+   "score": null,
+   "evidence": {},
+   "feedback": "",
+   "confidence": null,
+   "missing_reason": "student_timeout",
+   "diagnostics": [
+    "smoke run timed out (suspected infinite loop); execution-dependent metric skipped"
+   ],
+   "tool_metadata": {}
+  },
+  {
+   "analyzer_id": "llm_review",
+   "metric_name": "readability",
+   "status": "failed",
+   "score": "0.80",
+   "evidence": {
+    "rubric": "deterministic deductions, documented in analyzers/readability.py",
+    "findings": [
+     {
+      "check": "naming",
+      "detail": "7/11 variables have single-letter names (['a', 'b', 'h'])",
+      "fix": "use descriptive names (e.g. lhs/rhs or first/second) so the code reads without a legend",
+      "deduction": "0.20"
+     }
+    ],
+    "code_lines": 11,
+    "comment_lines": 3
+   },
+   "feedback": "deterministic readability checks: 7/11 variables have single-letter names (['a', 'b', 'h'])",
+   "confidence": null,
+   "missing_reason": "none",
+   "diagnostics": [],
+   "tool_metadata": {}
+  },
+  {
+   "analyzer_id": "similarity_flag",
+   "metric_name": "originality",
+   "status": "passed",
+   "score": "1",
+   "evidence": {
+    "comparisons": [
+     {
+      "against": "compile_error.c",
+      "similarity": 0.6562,
+      "flagged": false
+     },
+     {
+      "against": "correct.c",
+      "similarity": 0.2745,
+      "flagged": false
+     },
+     {
+      "against": "incorrect.c",
+      "similarity": 0.3662,
+      "flagged": false
+     }
+    ],
+    "threshold": 0.85
+   },
+   "feedback": "highest similarity 0.6562 (vs compile_error.c), below the flag threshold 0.85",
+   "confidence": null,
+   "missing_reason": "none",
+   "diagnostics": [],
+   "tool_metadata": {}
+  }
+ ],
+ "score_breakdown": [
+  {
+   "name": "correctness",
+   "configured_weight": "0.2",
+   "status": "skipped",
+   "score": null,
+   "contribution": "0",
+   "effective_weight": "0.2",
+   "note": ""
+  },
+  {
+   "name": "syntax",
+   "configured_weight": "0.1",
+   "status": "passed",
+   "score": "1",
+   "contribution": "10.0",
+   "effective_weight": "0.1",
+   "note": "clean compile under -Wall -Wextra -Werror -std=c11 (warnings are errors)"
+  },
+  {
+   "name": "structure",
+   "configured_weight": "0.1",
+   "status": "passed",
+   "score": "1",
+   "contribution": "10.0",
+   "effective_weight": "0.1",
+   "note": "1/1 functions within thresholds (cyclomatic <= 8, length <= 40 lines). Most complex: main (cyclomatic 3)."
+  },
+  {
+   "name": "modularity",
+   "configured_weight": "0.1",
+   "status": "failed",
+   "score": "0.5",
+   "contribution": "5.00",
+   "effective_weight": "0.1",
+   "note": "found 1 function(s) (main); the rules expect at least 2 including helper functions."
+  },
+  {
+   "name": "logical",
+   "configured_weight": "0.1",
+   "status": "skipped",
+   "score": null,
+   "contribution": "0",
+   "effective_weight": "0.1",
+   "note": ""
+  },
+  {
+   "name": "complexity",
+   "configured_weight": "0.1",
+   "status": "passed",
+   "score": "1",
+   "contribution": "10.0",
+   "effective_weight": "0.1",
+   "note": "estimated complexity O(1) (static heuristic); required O(1)"
+  },
+  {
+   "name": "memory_safety",
+   "configured_weight": "0.1",
+   "status": "skipped",
+   "score": null,
+   "contribution": "0",
+   "effective_weight": "0.1",
+   "note": ""
+  },
+  {
+   "name": "readability",
+   "configured_weight": "0.1",
+   "status": "failed",
+   "score": "0.80",
+   "contribution": "8.000",
+   "effective_weight": "0.1",
+   "note": "deterministic readability checks: 7/11 variables have single-letter names (['a', 'b', 'h'])"
+  },
+  {
+   "name": "originality",
+   "configured_weight": "0.1",
+   "status": "passed",
+   "score": "1",
+   "contribution": "10.0",
+   "effective_weight": "0.1",
+   "note": "highest similarity 0.6562 (vs compile_error.c), below the flag threshold 0.85"
+  }
+ ],
+ "metric_coverage": "0.6",
+ "execution_evidence": [
+  {
+   "type": "smoke_run",
+   "status": "timeout",
+   "input": "7 5\n",
+   "duration_ms": 1002.153162000468
+  }
+ ],
+ "flags": [
+  "suspected_infinite_loop",
+  "d3_case_4"
+ ],
+ "provenance": {
+  "rules_hash": "sha256:34a95d23af29cd7b4f908e70217d574f78b65002318d4b79a3505822726496a6",
+  "assignment_spec_hash": "sha256:85528599693595a9fbb2878ef6a832d827d25eb9d1bd433c7ce381569f7f08a5",
+  "cache_key": "4c652c7b0beb05a0ea2841e08b1d5e12f519af7b182590abe6249395a5b390de",
+  "cache_status": "prepared_cache_hit",
+  "gcc": "gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+  "scoring_policy": "d3-v1",
+  "oracle_policy": "oracle-v1"
+ },
+ "limitations": [
+  "Sandbox isolation is process-level (limits, timeout, namespaces where probed), not a chroot; see README.",
+  "Static complexity and structure use heuristic source analysis; their evidence records the method used.",
+  "D-3 case 4: partial grade; execution-dependent metrics skipped because of the submission contribute 0 under this disclosed policy"
+ ]
+}

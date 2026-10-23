@@ -1,0 +1,53 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "autograder"
+version = "0.1.0"
+description = "AutoGrader: A Rule-Driven Evaluator for C Programs"
+requires-python = ">=3.11"
+dependencies = [
+    "pydantic>=2.5",
+    "PyYAML>=6.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.4",
+    "httpx>=0.27",
+]
+web = [
+    "fastapi>=0.110",
+    "uvicorn>=0.29",
+    "jinja2>=3.1",
+    "python-multipart>=0.0.9",
+]
+
+[project.scripts]
+autograder = "autograder.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint.per-file-ignores]
+# doctor probes must never crash the report: every probe catches all
+# exceptions deliberately and reports the failure as data instead.
+"src/autograder/doctor.py" = ["BLE001"]
+"src/autograder/sandbox/limits.py" = ["BLE001"]
+# cache integrity checks: ANY read/parse failure must classify the entry as
+# corrupt rather than propagate — same deliberate-probe pattern as doctor.
+"src/autograder/assignment/cache.py" = ["BLE001", "S112"]
+# workflow: an analyzer that raises must become an ERROR result, never a
+# crashed evaluation; version probes likewise degrade to 'unknown'.
+"src/autograder/workflow.py" = ["BLE001"]
+# web: report listing skips unreadable files rather than failing the page;
+# B008 is FastAPI's documented dependency-injection idiom (Form/File).
+"src/autograder/web/app.py" = ["BLE001", "S112", "B008"]

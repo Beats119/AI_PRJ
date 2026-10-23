@@ -1,0 +1,38 @@
+AutoGrader evaluation report
+============================
+submission : timeout.c (sha256:1feab3b1264ccad091f2c5ab026449f53e049caa2bd0901d15f8b2d03deb8b40)
+evaluation : eval-704fc6a112be
+overall: partial — grade 53.0/100
+coverage   : 0.6 of configured weight graded
+flags      : suspected_infinite_loop, d3_case_4
+
+Per-metric breakdown (configured weight / score / contribution / effective weight):
+  correctness    weight 0.2  status skipped    score n/a    contribution 0      effective 0.2
+  syntax         weight 0.1  status passed     score 1      contribution 10.0   effective 0.1  (clean compile under -Wall -Wextra -Werror -std=c11 (warnings are errors))
+      feedback: clean compile under -Wall -Wextra -Werror -std=c11 (warnings are errors)
+  structure      weight 0.1  status passed     score 1      contribution 10.0   effective 0.1  (1/1 functions within thresholds (cyclomatic <= 8, length <= 40 lines). Most complex: main (cyclomatic 3).)
+      feedback: 1/1 functions within thresholds (cyclomatic <= 8, length <= 40 lines). Most complex: main (cyclomatic 3).
+  modularity     weight 0.1  status failed     score 0.5    contribution 5.00   effective 0.1  (found 1 function(s) (main); the rules expect at least 2 including helper functions.)
+      feedback: found 1 function(s) (main); the rules expect at least 2 including helper functions.
+  logical        weight 0.1  status skipped    score n/a    contribution 0      effective 0.1
+  complexity     weight 0.1  status passed     score 1      contribution 10.0   effective 0.1  (estimated complexity O(1) (static heuristic); required O(1))
+      feedback: estimated complexity O(1) (static heuristic); required O(1)
+  memory_safety  weight 0.1  status skipped    score n/a    contribution 0      effective 0.1
+  readability    weight 0.1  status failed     score 0.80   contribution 8.000  effective 0.1  (deterministic readability checks: 7/11 variables have single-letter names (['a', 'b', 'h']))
+      feedback: deterministic readability checks: 7/11 variables have single-letter names (['a', 'b', 'h'])
+  originality    weight 0.1  status passed     score 1      contribution 10.0   effective 0.1  (highest similarity 0.6562 (vs compile_error.c), below the flag threshold 0.85)
+      feedback: highest similarity 0.6562 (vs compile_error.c), below the flag threshold 0.85
+
+Limitations and scoring notes:
+  - Sandbox isolation is process-level (limits, timeout, namespaces where probed), not a chroot; see README.
+  - Static complexity and structure use heuristic source analysis; their evidence records the method used.
+  - D-3 case 4: partial grade; execution-dependent metrics skipped because of the submission contribute 0 under this disclosed policy
+
+Provenance:
+  assignment_spec_hash: sha256:85528599693595a9fbb2878ef6a832d827d25eb9d1bd433c7ce381569f7f08a5
+  cache_key: 4c652c7b0beb05a0ea2841e08b1d5e12f519af7b182590abe6249395a5b390de
+  cache_status: prepared_cache_hit
+  gcc: gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0
+  oracle_policy: oracle-v1
+  rules_hash: sha256:34a95d23af29cd7b4f908e70217d574f78b65002318d4b79a3505822726496a6
+  scoring_policy: d3-v1

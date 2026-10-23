@@ -1,0 +1,8 @@
+assignment_id: add_two_integers
+generator: int_pair_v1
+comparison: whitespace_normalized
+input_min: -2147483648
+input_max: 2147483647
+# The assignment defines no invalid-input behaviour, so the invalid_input
+# test category is NOT applicable for this assignment.
+invalid_input_behavior: null

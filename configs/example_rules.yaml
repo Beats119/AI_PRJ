@@ -1,0 +1,77 @@
+# Example rule set for the PDF's worked example (add_two_integers).
+# Mirrors the rules JSON in Agentic-AI-assignment.pdf pp.3-4.
+# Weights must sum to 1.00. A metric is REQUIRED unless marked required: false.
+problem: add_two_integers
+time_limit_s: 1
+memory_limit_mb: 64
+
+# Bounded test generation (D-2, approved): one round, at most 40 candidates,
+# at most 2 setup LLM calls (enforced again in configs/models.yaml).
+generation:
+  rounds: 1
+  max_candidates: 40
+  max_candidates_per_category: 10
+
+# Trusted-test sufficiency bar (D-1, approved as amended).
+sufficiency:
+  min_trusted_total: 8
+  min_per_core_category: 2
+  min_per_applicable_category: 1
+  core_categories:
+    - ordinary_valid
+    - minimum_boundary
+    - maximum_boundary
+    - edge_values
+
+metrics:
+  - name: correctness
+    analyzer: io_tests
+    weight: 0.20
+    params:
+      testset_dir: tests/add/
+  - name: syntax
+    analyzer: compiler_warnings
+    weight: 0.10
+    params:
+      flags: "-Wall -Wextra -Werror -std=c11"
+  - name: structure
+    analyzer: static_analysis
+    weight: 0.10
+    params:
+      max_cyclomatic: 8
+      max_function_length: 40
+  - name: modularity
+    analyzer: function_split
+    weight: 0.10
+    params:
+      expect_helpers: true
+      min_functions: 2
+  - name: logical
+    analyzer: edge_case_runner
+    weight: 0.10
+    params:
+      cases: [negatives, zero, int_overflow]
+  - name: complexity
+    analyzer: complexity_estimator
+    weight: 0.10
+    params:
+      required: "O(1)"
+      sizes: [1, 10, 100]
+  - name: memory_safety
+    analyzer: sanitizer_run
+    weight: 0.10
+    params:
+      flags: "-fsanitize=address,undefined"
+  - name: readability
+    analyzer: llm_review
+    weight: 0.10
+    params:
+      # Scored part is the deterministic code-quality analysis (D-4).
+      # Any LLM text is advisory only and never changes this score.
+      llm_advisory: false
+  - name: originality
+    analyzer: similarity_flag
+    weight: 0.10
+    params:
+      corpus_dir: submissions/
+      flag_threshold: 0.85

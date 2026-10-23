@@ -1,0 +1,12 @@
+# Instructor-provided cases (trusted by source). The first is the worked
+# example from the assignment PDF (sample input 7 5 -> sample output 12).
+tests:
+  - input: "7 5\n"
+    expected: "12"
+    category: ordinary_valid
+  - input: "0 0\n"
+    expected: "0"
+    category: edge_values
+  - input: "-3 -4\n"
+    expected: "-7"
+    category: edge_values

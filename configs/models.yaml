@@ -1,0 +1,19 @@
+# LLM configuration (Khushi decision, 2026-10-22).
+# Default backend is a LOCAL Ollama server. The model identifier below is the
+# configured default; `autograder doctor` verifies whether it is actually
+# available on the machine. Nothing in the core grading path depends on an
+# unverified LLM judgement.
+llm:
+  backend: ollama
+  base_url: http://127.0.0.1:11434
+  model: llama3.1
+  temperature: 0
+  seed: 42
+  # Hard bounds (D-2, approved): setup may use at most 2 LLM calls in total.
+  max_setup_calls: 2
+  max_spec_assist_calls: 1
+  max_test_proposal_calls: 1
+  # Readability review: 1 bounded advisory call per evaluation, only when a
+  # rules file explicitly enables it. Advisory text never affects the grade.
+  max_readability_calls_per_evaluation: 1
+  request_timeout_s: 120

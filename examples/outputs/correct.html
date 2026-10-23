@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<title>AutoGrader report — correct.c</title>
+<style>
+body{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;margin:2rem auto;
+max-width:960px;padding:0 1rem;color:#1a1a2e;background:#f7f7fb}
+.card{background:#fff;border:1px solid #e2e2ea;border-radius:12px;padding:1.25rem 1.5rem;
+margin-bottom:1rem;box-shadow:0 1px 3px rgba(20,20,60,.06)}
+h1{font-size:1.5rem;margin:.2rem 0} h2{font-size:1.1rem;margin:.4rem 0 .8rem}
+.grade{font-size:2.2rem;font-weight:700}
+.chip{display:inline-block;padding:.1rem .55rem;border-radius:999px;font-size:.78rem;
+font-weight:600;background:#e8e8f2}
+.chip.complete{background:#d9f2e2}.chip.partial{background:#fdeec9}
+.chip.incomplete{background:#f9d7d7}.chip.provisional{background:#e3dcf9}
+table{border-collapse:collapse;width:100%;font-size:.92rem}
+th,td{text-align:left;padding:.45rem .5rem;border-bottom:1px solid #eee}
+.bar{height:8px;background:#eee;border-radius:4px;min-width:90px}
+.bar>div{height:8px;background:#4a6cf7;border-radius:4px}
+pre{background:#10101c;color:#d8f3dc;padding:.8rem;border-radius:8px;overflow-x:auto;
+font-size:.82rem}
+.muted{color:#666;font-size:.85rem}
+</style></head><body>
+<div class="card"><h1>AutoGrader evaluation report</h1>
+<div class="muted">submission correct.c · sha256:8115bd38cd072ae7f883e3d44c4f449f77f27b85e9d28c76bb47256961bfb1b4
+ · evaluation eval-b50572942e86</div>
+<div class="grade">100.0/100</div>
+<span class="chip complete">complete</span>
+<div class="muted">metric coverage 1 of configured weight</div></div>
+<div class="card"><h2>Per-metric breakdown</h2><table>
+<tr><th>Metric</th><th>Weight</th><th>Status</th><th></th><th>Score</th>
+<th>Contribution</th><th>Effective weight</th></tr>
+<tr><td><b>correctness</b><div class='muted'>24/24 trusted tests pass.</div></td><td>0.2</td><td>passed</td><td><div class='bar'><div style='width:100%'></div></div></td><td>1</td><td>20.0</td><td>0.2</td></tr><tr><td><b>syntax</b><div class='muted'>clean compile under -Wall -Wextra -Werror -std=c11 (warnings are errors)</div></td><td>0.1</td><td>passed</td><td><div class='bar'><div style='width:100%'></div></div></td><td>1</td><td>10.0</td><td>0.1</td></tr><tr><td><b>structure</b><div class='muted'>2/2 functions within thresholds (cyclomatic &lt;= 8, length &lt;= 40 lines). Most complex: main (cyclomatic 2).</div></td><td>0.1</td><td>passed</td><td><div class='bar'><div style='width:100%'></div></div></td><td>1</td><td>10.0</td><td>0.1</td></tr><tr><td><b>modularity</b><div class='muted'>found 2 function(s) (add, main); the rules expect at least 2 including helper functions.</div></td><td>0.1</td><td>passed</td><td><div class='bar'><div style='width:100%'></div></div></td><td>1</td><td>10.0</td><td>0.1</td></tr><tr><td><b>logical</b><div class='muted'>13/13 trusted tests pass.</div></td><td>0.1</td><td>passed</td><td><div class='bar'><div style='width:100%'></div></div></td><td>1</td><td>10.0</td><td>0.1</td></tr><tr><td><b>complexity</b><div class='muted'>estimated complexity O(1) (static heuristic); required O(1)</div></td><td>0.1</td><td>passed</td><td><div class='bar'><div style='width:100%'></div></div></td><td>1</td><td>10.0</td><td>0.1</td></tr><tr><td><b>memory_safety</b><div class='muted'>24/24 trusted tests run clean under ASan+UBSan.</div></td><td>0.1</td><td>passed</td><td><div class='bar'><div style='width:100%'></div></div></td><td>1</td><td>10.0</td><td>0.1</td></tr><tr><td><b>readability</b><div class='muted'>deterministic readability checks: no issues found</div></td><td>0.1</td><td>passed</td><td><div class='bar'><div style='width:100%'></div></div></td><td>1</td><td>10.0</td><td>0.1</td></tr><tr><td><b>originality</b><div class='muted'>highest similarity 0.2745 (vs timeout.c), below the flag threshold 0.85</div></td><td>0.1</td><td>passed</td><td><div class='bar'><div style='width:100%'></div></div></td><td>1</td><td>10.0</td><td>0.1</td></tr></table></div>
+
+<div class="card"><h2>Limitations and scoring notes</h2><ul><li>Sandbox isolation is process-level (limits, timeout, namespaces where probed), not a chroot; see README.</li><li>Static complexity and structure use heuristic source analysis; their evidence records the method used.</li></ul></div>
+<div class="card"><h2>Provenance</h2><table><tr><td>assignment_spec_hash</td><td>sha256:85528599693595a9fbb2878ef6a832d827d25eb9d1bd433c7ce381569f7f08a5</td></tr><tr><td>cache_key</td><td>4c652c7b0beb05a0ea2841e08b1d5e12f519af7b182590abe6249395a5b390de</td></tr><tr><td>cache_status</td><td>prepared_new</td></tr><tr><td>gcc</td><td>gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0</td></tr><tr><td>oracle_policy</td><td>oracle-v1</td></tr><tr><td>rules_hash</td><td>sha256:34a95d23af29cd7b4f908e70217d574f78b65002318d4b79a3505822726496a6</td></tr><tr><td>scoring_policy</td><td>d3-v1</td></tr></table></div>
+</body></html>

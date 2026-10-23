@@ -1,0 +1,964 @@
+{
+ "evaluation_id": "eval-b50572942e86",
+ "submission_name": "correct.c",
+ "submission_hash": "sha256:8115bd38cd072ae7f883e3d44c4f449f77f27b85e9d28c76bb47256961bfb1b4",
+ "assignment_hash": "sha256:85528599693595a9fbb2878ef6a832d827d25eb9d1bd433c7ce381569f7f08a5",
+ "rules_hash": "sha256:34a95d23af29cd7b4f908e70217d574f78b65002318d4b79a3505822726496a6",
+ "overall_status": "complete",
+ "overall_grade": "100.0",
+ "metric_results": [
+  {
+   "analyzer_id": "io_tests",
+   "metric_name": "correctness",
+   "status": "passed",
+   "score": "1",
+   "evidence": {
+    "tests_passed": 24,
+    "tests_total": 24,
+    "suite_size_including_untrusted": 24,
+    "failing": [],
+    "records": [
+     {
+      "test_id": "inst-001",
+      "category": "ordinary_valid",
+      "input": "7 5\n",
+      "expected": "12",
+      "actual": "12\n",
+      "execution_status": "ok",
+      "exit_code": 0,
+      "diagnostics": [
+       "isolation: process_limits=prlimit, network_namespace=on"
+      ],
+      "outcome": "pass"
+     },
+     {
+      "test_id": "inst-002",
+      "category": "edge_values",
+      "input": "0 0\n",
+      "expected": "0",
+      "actual": "0\n",
+      "execution_status": "ok",
+      "exit_code": 0,
+      "diagnostics": [
+       "isolation: process_limits=prlimit, network_namespace=on"
+      ],
+      "outcome": "pass"
+     },
+     {
+      "test_id": "inst-003",
+      "category": "edge_values",
+      "input": "-3 -4\n",
+      "expected": "-7",
+      "actual": "-7\n",
+      "execution_status": "ok",
+      "exit_code": 0,
+      "diagnostics": [
+       "isolation: process_limits=prlimit, network_namespace=on"
+      ],
+      "outcome": "pass"
+     },
+     {
+      "test_id": "gen-001",
+      "category": "ordinary_valid",
+      "input": "2 3\n",
+      "expected": "5",
+      "actual": "5\n",
+      "execution_status": "ok",
+      "exit_code": 0,
+      "diagnostics": [
+       "isolation: process_limits=prlimit, network_namespace=on"
+      ],
+      "outcome": "pass"
+     },
+     {
+      "test_id": "gen-002",
+      "category": "ordinary_valid",
+      "input": "10 20\n",
+      "expected": "30",
+      "actual": "30\n",
+      "execution_status": "ok",
+      "exit_code": 0,
+      "diagnostics": [
+       "isolation: process_limits=prlimit, network_namespace=on"
+      ],
+      "outcome": "pass"
+     },
+     {
+      "test_id": "gen-003",
+      "category": "ordinary_valid",
+      "input": "100 250\n",
+      "expected": "350",
+      "actual": "350\n",
+      "execution_status": "ok",
+      "exit_code": 0,
+      "diagnostics": [
+       "isolation: process_limits=prlimit, network_namespace=on"
+      ],
+      "outcome": "pass"
+     },
+     {
+      "test_id": "gen-004",
+      "category": "ordinary_valid",
+      "input": "1 1\n",
+      "expected": "2",
+      "actual": "2\n",
+      "execution_status": "ok",
+      "exit_code": 0,
+      "diagnostics": [
+       "isolation: process_limits=prlimit, network_namespace=on"
+      ],
+      "outcome": "pass"
+     },
+     {
+      "test_id": "gen-005",
+      "category": "ordinary_valid",
+      "input": "42 58\n",
+      "expected": "100",
+      "actual": "100\n",
+      "execution_status": "ok",
+      "exit_code": 0,
+      "diagnostics": [
+       "isolation: process_limits=prlimit, network_namespace=on"
+      ],
+      "outcome": "pass"
+     },
+     {
+      "test_id": "gen-006",
+      "category": "minimum_boundary",
+      "input": "-2147483648 -2147483648\n",
+      "expected": "-4294967296",
+      "actual": "-4294967296\n",
+      "execution_status": "ok",
+      "exit_code": 0,
+      "diagnostics": [
+       "isolation: process_limits=prlimit, network_namespace=on"
+      ],
+      "outcome": "pass"
+     },
+     {
+      "test_id": "gen-007",
+      "category": "minimum_boundary",
+      "input": "-2147483648 0\n",
+      "expected": "-2147483648",
+      "actual": "-2147483648\n",
+      "execution_status": "ok",
+      "exit_code": 0,
+      "diagnostics": [
+       "isolation: process_limits=prlimit, network_namespace=on"
+      ],
+      "outcome": "pass"
+     },
+     {
+      "test_id": "gen-008",
+      "category": "minimum_boundary",
+      "input": "-2147483648 1\n",
+      "expected": "-2147483647",
+      "actual": "-2147483647\n",
+      "execution_status": "ok",
+      "exit_code": 0,
+      "diagnostics": [
+       "isolation: process_limits=prlimit, network_namespace=on"
+      ],
+      "outcome": "pass"
+     },
+     {
+      "test_id": "gen-009",
+      "category": "maximum_boundary",
+      "input": "2147483647 2147483647\n",
+      "expected": "4294967294",
+      "actual": "4294967294\n",
+      "execution_status": "ok",
+      "exit_code": 0,
+      "diagnostics": [
+       "isolation: process_limits=prlimit, network_namespace=on"
+      ],
+      "outcome": "pass"
+     },
+     {
+      "test_id": "gen-010",
+      "category": "maximum_boundary",
+      "input": "2147483647 0\n",
+      "expected": "2147483647",
+      "actual": "2147483647\n",
+      "execution_status": "ok",
+      "exit_code": 0,
+      "diagnostics": [
+       "isolation: process_limits=prlimit, network_namespace=on"
+      ],
+      "outcome": "pass"
+     },
+     {
+      "test_id": "gen-011",
+      "category": "maximum_boundary",
+      "input": "2147483647 -1\n",
+      "expected": "2147483646",
+      "actual": "2147483646\n",
+      "execution_status": "ok",
+      "exit_code": 0,
+      "diagnostics": [
+       "isolation: process_limits=prlimit, network_namespace=on"
+      ],
+      "outcome": "pass"
+     },
+     {
+      "test_id": "gen-012",
+      "category": "edge_values",
+      "input": "0 5\n",
+      "expected": "5",
+      "actual": "5\n",
+      "execution_status": "ok",
+      "exit_code": 0,
+      "diagnostics": [
+       "isolation: process_limits=prlimit, network_namespace=on"
+      ],
+      "outcome": "pass"
+     },
+     {
+      "test_id": "gen-013",
+      "category": "edge_values",
+      "input": "-1 1\n",
+      "expected": "0",
+      "actual": "0\n",
+      "execution_status": "ok",
+      "exit_code": 0,
+      "diagnostics": [
+       "isolation: process_limits=prlimit, network_namespace=on"
+      ],
+      "outcome": "pass"
+     },
+     {
+      "test_id": "gen-014",
+      "category": "edge_values",
+      "input": "-7 -8\n",
+      "expected": "-15",
+      "actual": "-15\n",
+      "execution_status": "ok",
+      "exit_code": 0,
+      "diagnostics": [
+       "isolation: process_limits=prlimit, network_namespace=on"
+      ],
+      "outcome": "pass"
+     },
+     {
+      "test_id": "gen-015",
+      "category": "edge_values",
+      "input": "5 -5\n",
+      "expected": "0",
+      "actual": "0\n",
+      "execution_status": "ok",
+      "exit_code": 0,
+      "diagnostics": [
+       "isolation: process_limits=prlimit, network_namespace=on"
+      ],
+      "outcome": "pass"
+     },
+     {
+      "test_id": "gen-016",
+      "category": "edge_values",
+      "input": "-100 100\n",
+      "expected": "0",
+      "actual": "0\n",
+      "execution_status": "ok",
+      "exit_code": 0,
+      "diagnostics": [
+       "isolation: process_limits=prlimit, network_namespace=on"
+      ],
+      "outcome": "pass"
+     },
+     {
+      "test_id": "gen-017",
+      "category": "parsing_whitespace",
+      "input": "  12   30  \n",
+      "expected": "42",
+      "actual": "42\n",
+      "execution_status": "ok",
+      "exit_code": 0,
+      "diagnostics": [
+       "isolation: process_limits=prlimit, network_namespace=on"
+      ],
+      "outcome": "pass"
+     },
+     {
+      "test_id": "gen-018",
+      "category": "parsing_whitespace",
+      "input": "9\t4\n",
+      "expected": "13",
+      "actual": "13\n",
+      "execution_status": "ok",
+      "exit_code": 0,
+      "diagnostics": [
+       "isolation: process_limits=prlimit, network_namespace=on"
+      ],
+      "outcome": "pass"
+     },
+     {
+      "test_id": "gen-019",
+      "category": "large_operands",
+      "input": "2000000000 2000000000\n",
+      "expected": "4000000000",
+      "actual": "4000000000\n",
+      "execution_status": "ok",
+      "exit_code": 0,
+      "diagnostics": [
+       "isolation: process_limits=prlimit, network_namespace=on"
+      ],
+      "outcome": "pass"
+     },
+     {
+      "test_id": "gen-020",
+      "category": "large_operands",
+      "input": "2147483647 1\n",
+      "expected": "2147483648",
+      "actual": "2147483648\n",
+      "execution_status": "ok",
+      "exit_code": 0,
+      "diagnostics": [
+       "isolation: process_limits=prlimit, network_namespace=on"
+      ],
+      "outcome": "pass"
+     },
+     {
+      "test_id": "gen-021",
+      "category": "large_operands",
+      "input": "-2147483648 -1\n",
+      "expected": "-2147483649",
+      "actual": "-2147483649\n",
+      "execution_status": "ok",
+      "exit_code": 0,
+      "diagnostics": [
+       "isolation: process_limits=prlimit, network_namespace=on"
+      ],
+      "outcome": "pass"
+     }
+    ]
+   },
+   "feedback": "24/24 trusted tests pass.",
+   "confidence": null,
+   "missing_reason": "none",
+   "diagnostics": [],
+   "tool_metadata": {}
+  },
+  {
+   "analyzer_id": "compiler_warnings",
+   "metric_name": "syntax",
+   "status": "passed",
+   "score": "1",
+   "evidence": {
+    "flags": "-Wall -Wextra -Werror -std=c11",
+    "strict_werror_compile_passed": true,
+    "warnings": 0,
+    "errors": 0,
+    "warning_lines": [],
+    "diagnostics_excerpt": ""
+   },
+   "feedback": "clean compile under -Wall -Wextra -Werror -std=c11 (warnings are errors)",
+   "confidence": null,
+   "missing_reason": "none",
+   "diagnostics": [],
+   "tool_metadata": {}
+  },
+  {
+   "analyzer_id": "static_analysis",
+   "metric_name": "structure",
+   "status": "passed",
+   "score": "1",
+   "evidence": {
+    "parser": "builtin-heuristic (cppcheck/lizard not required)",
+    "max_cyclomatic": 8,
+    "max_function_length": 40,
+    "functions": [
+     {
+      "function": "add",
+      "lines": 3,
+      "cyclomatic": 1,
+      "problems": [],
+      "suggested_fixes": []
+     },
+     {
+      "function": "main",
+      "lines": 8,
+      "cyclomatic": 2,
+      "problems": [],
+      "suggested_fixes": []
+     }
+    ]
+   },
+   "feedback": "2/2 functions within thresholds (cyclomatic <= 8, length <= 40 lines). Most complex: main (cyclomatic 2).",
+   "confidence": null,
+   "missing_reason": "none",
+   "diagnostics": [],
+   "tool_metadata": {}
+  },
+  {
+   "analyzer_id": "function_split",
+   "metric_name": "modularity",
+   "status": "passed",
+   "score": "1",
+   "evidence": {
+    "functions": [
+     "add",
+     "main"
+    ],
+    "helpers": [
+     "add"
+    ],
+    "min_functions": 2
+   },
+   "feedback": "found 2 function(s) (add, main); the rules expect at least 2 including helper functions.",
+   "confidence": null,
+   "missing_reason": "none",
+   "diagnostics": [],
+   "tool_metadata": {}
+  },
+  {
+   "analyzer_id": "edge_case_runner",
+   "metric_name": "logical",
+   "status": "passed",
+   "score": "1",
+   "evidence": {
+    "tests_passed": 13,
+    "tests_total": 13,
+    "suite_size_including_untrusted": 13,
+    "failing": [],
+    "records": [
+     {
+      "test_id": "inst-002",
+      "category": "edge_values",
+      "input": "0 0\n",
+      "expected": "0",
+      "actual": "0\n",
+      "execution_status": "ok",
+      "exit_code": 0,
+      "diagnostics": [
+       "isolation: process_limits=prlimit, network_namespace=on"
+      ],
+      "outcome": "pass"
+     },
+     {
+      "test_id": "inst-003",
+      "category": "edge_values",
+      "input": "-3 -4\n",
+      "expected": "-7",
+      "actual": "-7\n",
+      "execution_status": "ok",
+      "exit_code": 0,
+      "diagnostics": [
+       "isolation: process_limits=prlimit, network_namespace=on"
+      ],
+      "outcome": "pass"
+     },
+     {
+      "test_id": "gen-006",
+      "category": "minimum_boundary",
+      "input": "-2147483648 -2147483648\n",
+      "expected": "-4294967296",
+      "actual": "-4294967296\n",
+      "execution_status": "ok",
+      "exit_code": 0,
+      "diagnostics": [
+       "isolation: process_limits=prlimit, network_namespace=on"
+      ],
+      "outcome": "pass"
+     },
+     {
+      "test_id": "gen-007",
+      "category": "minimum_boundary",
+      "input": "-2147483648 0\n",
+      "expected": "-2147483648",
+      "actual": "-2147483648\n",
+      "execution_status": "ok",
+      "exit_code": 0,
+      "diagnostics": [
+       "isolation: process_limits=prlimit, network_namespace=on"
+      ],
+      "outcome": "pass"
+     },
+     {
+      "test_id": "gen-008",
+      "category": "minimum_boundary",
+      "input": "-2147483648 1\n",
+      "expected": "-2147483647",
+      "actual": "-2147483647\n",
+      "execution_status": "ok",
+      "exit_code": 0,
+      "diagnostics": [
+       "isolation: process_limits=prlimit, network_namespace=on"
+      ],
+      "outcome": "pass"
+     },
+     {
+      "test_id": "gen-009",
+      "category": "maximum_boundary",
+      "input": "2147483647 2147483647\n",
+      "expected": "4294967294",
+      "actual": "4294967294\n",
+      "execution_status": "ok",
+      "exit_code": 0,
+      "diagnostics": [
+       "isolation: process_limits=prlimit, network_namespace=on"
+      ],
+      "outcome": "pass"
+     },
+     {
+      "test_id": "gen-010",
+      "category": "maximum_boundary",
+      "input": "2147483647 0\n",
+      "expected": "2147483647",
+      "actual": "2147483647\n",
+      "execution_status": "ok",
+      "exit_code": 0,
+      "diagnostics": [
+       "isolation: process_limits=prlimit, network_namespace=on"
+      ],
+      "outcome": "pass"
+     },
+     {
+      "test_id": "gen-011",
+      "category": "maximum_boundary",
+      "input": "2147483647 -1\n",
+      "expected": "2147483646",
+      "actual": "2147483646\n",
+      "execution_status": "ok",
+      "exit_code": 0,
+      "diagnostics": [
+       "isolation: process_limits=prlimit, network_namespace=on"
+      ],
+      "outcome": "pass"
+     },
+     {
+      "test_id": "gen-012",
+      "category": "edge_values",
+      "input": "0 5\n",
+      "expected": "5",
+      "actual": "5\n",
+      "execution_status": "ok",
+      "exit_code": 0,
+      "diagnostics": [
+       "isolation: process_limits=prlimit, network_namespace=on"
+      ],
+      "outcome": "pass"
+     },
+     {
+      "test_id": "gen-013",
+      "category": "edge_values",
+      "input": "-1 1\n",
+      "expected": "0",
+      "actual": "0\n",
+      "execution_status": "ok",
+      "exit_code": 0,
+      "diagnostics": [
+       "isolation: process_limits=prlimit, network_namespace=on"
+      ],
+      "outcome": "pass"
+     },
+     {
+      "test_id": "gen-014",
+      "category": "edge_values",
+      "input": "-7 -8\n",
+      "expected": "-15",
+      "actual": "-15\n",
+      "execution_status": "ok",
+      "exit_code": 0,
+      "diagnostics": [
+       "isolation: process_limits=prlimit, network_namespace=on"
+      ],
+      "outcome": "pass"
+     },
+     {
+      "test_id": "gen-015",
+      "category": "edge_values",
+      "input": "5 -5\n",
+      "expected": "0",
+      "actual": "0\n",
+      "execution_status": "ok",
+      "exit_code": 0,
+      "diagnostics": [
+       "isolation: process_limits=prlimit, network_namespace=on"
+      ],
+      "outcome": "pass"
+     },
+     {
+      "test_id": "gen-016",
+      "category": "edge_values",
+      "input": "-100 100\n",
+      "expected": "0",
+      "actual": "0\n",
+      "execution_status": "ok",
+      "exit_code": 0,
+      "diagnostics": [
+       "isolation: process_limits=prlimit, network_namespace=on"
+      ],
+      "outcome": "pass"
+     }
+    ]
+   },
+   "feedback": "13/13 trusted tests pass.",
+   "confidence": null,
+   "missing_reason": "none",
+   "diagnostics": [],
+   "tool_metadata": {}
+  },
+  {
+   "analyzer_id": "complexity_estimator",
+   "metric_name": "complexity",
+   "status": "passed",
+   "score": "1",
+   "evidence": {
+    "static": {
+     "functions": [
+      {
+       "function": "add",
+       "loop_depth": 0,
+       "recursive": false
+      },
+      {
+       "function": "main",
+       "loop_depth": 0,
+       "recursive": false
+      }
+     ],
+     "method": "static loop-nesting heuristic"
+    },
+    "required": "O(1)",
+    "estimated": "O(1)"
+   },
+   "feedback": "estimated complexity O(1) (static heuristic); required O(1)",
+   "confidence": null,
+   "missing_reason": "none",
+   "diagnostics": [],
+   "tool_metadata": {}
+  },
+  {
+   "analyzer_id": "sanitizer_run",
+   "metric_name": "memory_safety",
+   "status": "passed",
+   "score": "1",
+   "evidence": {
+    "probe": "asan/ubsan probe compiled and ran cleanly",
+    "address_space_limit": "disabled for instrumented runs (ASan reserves large virtual memory); CPU/wall/output limits still apply",
+    "records": [
+     {
+      "test_id": "inst-001",
+      "outcome": "clean",
+      "findings": [],
+      "summary": null
+     },
+     {
+      "test_id": "inst-002",
+      "outcome": "clean",
+      "findings": [],
+      "summary": null
+     },
+     {
+      "test_id": "inst-003",
+      "outcome": "clean",
+      "findings": [],
+      "summary": null
+     },
+     {
+      "test_id": "gen-001",
+      "outcome": "clean",
+      "findings": [],
+      "summary": null
+     },
+     {
+      "test_id": "gen-002",
+      "outcome": "clean",
+      "findings": [],
+      "summary": null
+     },
+     {
+      "test_id": "gen-003",
+      "outcome": "clean",
+      "findings": [],
+      "summary": null
+     },
+     {
+      "test_id": "gen-004",
+      "outcome": "clean",
+      "findings": [],
+      "summary": null
+     },
+     {
+      "test_id": "gen-005",
+      "outcome": "clean",
+      "findings": [],
+      "summary": null
+     },
+     {
+      "test_id": "gen-006",
+      "outcome": "clean",
+      "findings": [],
+      "summary": null
+     },
+     {
+      "test_id": "gen-007",
+      "outcome": "clean",
+      "findings": [],
+      "summary": null
+     },
+     {
+      "test_id": "gen-008",
+      "outcome": "clean",
+      "findings": [],
+      "summary": null
+     },
+     {
+      "test_id": "gen-009",
+      "outcome": "clean",
+      "findings": [],
+      "summary": null
+     },
+     {
+      "test_id": "gen-010",
+      "outcome": "clean",
+      "findings": [],
+      "summary": null
+     },
+     {
+      "test_id": "gen-011",
+      "outcome": "clean",
+      "findings": [],
+      "summary": null
+     },
+     {
+      "test_id": "gen-012",
+      "outcome": "clean",
+      "findings": [],
+      "summary": null
+     },
+     {
+      "test_id": "gen-013",
+      "outcome": "clean",
+      "findings": [],
+      "summary": null
+     },
+     {
+      "test_id": "gen-014",
+      "outcome": "clean",
+      "findings": [],
+      "summary": null
+     },
+     {
+      "test_id": "gen-015",
+      "outcome": "clean",
+      "findings": [],
+      "summary": null
+     },
+     {
+      "test_id": "gen-016",
+      "outcome": "clean",
+      "findings": [],
+      "summary": null
+     },
+     {
+      "test_id": "gen-017",
+      "outcome": "clean",
+      "findings": [],
+      "summary": null
+     },
+     {
+      "test_id": "gen-018",
+      "outcome": "clean",
+      "findings": [],
+      "summary": null
+     },
+     {
+      "test_id": "gen-019",
+      "outcome": "clean",
+      "findings": [],
+      "summary": null
+     },
+     {
+      "test_id": "gen-020",
+      "outcome": "clean",
+      "findings": [],
+      "summary": null
+     },
+     {
+      "test_id": "gen-021",
+      "outcome": "clean",
+      "findings": [],
+      "summary": null
+     }
+    ]
+   },
+   "feedback": "24/24 trusted tests run clean under ASan+UBSan.",
+   "confidence": null,
+   "missing_reason": "none",
+   "diagnostics": [],
+   "tool_metadata": {}
+  },
+  {
+   "analyzer_id": "llm_review",
+   "metric_name": "readability",
+   "status": "passed",
+   "score": "1",
+   "evidence": {
+    "rubric": "deterministic deductions, documented in analyzers/readability.py",
+    "findings": [],
+    "code_lines": 12,
+    "comment_lines": 1
+   },
+   "feedback": "deterministic readability checks: no issues found",
+   "confidence": null,
+   "missing_reason": "none",
+   "diagnostics": [],
+   "tool_metadata": {}
+  },
+  {
+   "analyzer_id": "similarity_flag",
+   "metric_name": "originality",
+   "status": "passed",
+   "score": "1",
+   "evidence": {
+    "comparisons": [
+     {
+      "against": "compile_error.c",
+      "similarity": 0.2577,
+      "flagged": false
+     },
+     {
+      "against": "incorrect.c",
+      "similarity": 0.1188,
+      "flagged": false
+     },
+     {
+      "against": "timeout.c",
+      "similarity": 0.2745,
+      "flagged": false
+     }
+    ],
+    "threshold": 0.85
+   },
+   "feedback": "highest similarity 0.2745 (vs timeout.c), below the flag threshold 0.85",
+   "confidence": null,
+   "missing_reason": "none",
+   "diagnostics": [],
+   "tool_metadata": {}
+  }
+ ],
+ "score_breakdown": [
+  {
+   "name": "correctness",
+   "configured_weight": "0.2",
+   "status": "passed",
+   "score": "1",
+   "contribution": "20.0",
+   "effective_weight": "0.2",
+   "note": "24/24 trusted tests pass."
+  },
+  {
+   "name": "syntax",
+   "configured_weight": "0.1",
+   "status": "passed",
+   "score": "1",
+   "contribution": "10.0",
+   "effective_weight": "0.1",
+   "note": "clean compile under -Wall -Wextra -Werror -std=c11 (warnings are errors)"
+  },
+  {
+   "name": "structure",
+   "configured_weight": "0.1",
+   "status": "passed",
+   "score": "1",
+   "contribution": "10.0",
+   "effective_weight": "0.1",
+   "note": "2/2 functions within thresholds (cyclomatic <= 8, length <= 40 lines). Most complex: main (cyclomatic 2)."
+  },
+  {
+   "name": "modularity",
+   "configured_weight": "0.1",
+   "status": "passed",
+   "score": "1",
+   "contribution": "10.0",
+   "effective_weight": "0.1",
+   "note": "found 2 function(s) (add, main); the rules expect at least 2 including helper functions."
+  },
+  {
+   "name": "logical",
+   "configured_weight": "0.1",
+   "status": "passed",
+   "score": "1",
+   "contribution": "10.0",
+   "effective_weight": "0.1",
+   "note": "13/13 trusted tests pass."
+  },
+  {
+   "name": "complexity",
+   "configured_weight": "0.1",
+   "status": "passed",
+   "score": "1",
+   "contribution": "10.0",
+   "effective_weight": "0.1",
+   "note": "estimated complexity O(1) (static heuristic); required O(1)"
+  },
+  {
+   "name": "memory_safety",
+   "configured_weight": "0.1",
+   "status": "passed",
+   "score": "1",
+   "contribution": "10.0",
+   "effective_weight": "0.1",
+   "note": "24/24 trusted tests run clean under ASan+UBSan."
+  },
+  {
+   "name": "readability",
+   "configured_weight": "0.1",
+   "status": "passed",
+   "score": "1",
+   "contribution": "10.0",
+   "effective_weight": "0.1",
+   "note": "deterministic readability checks: no issues found"
+  },
+  {
+   "name": "originality",
+   "configured_weight": "0.1",
+   "status": "passed",
+   "score": "1",
+   "contribution": "10.0",
+   "effective_weight": "0.1",
+   "note": "highest similarity 0.2745 (vs timeout.c), below the flag threshold 0.85"
+  }
+ ],
+ "metric_coverage": "1",
+ "execution_evidence": [
+  {
+   "type": "smoke_run",
+   "status": "ok",
+   "input": "7 5\n",
+   "duration_ms": 3.6753430003955145
+  },
+  {
+   "type": "profile",
+   "runs": 3,
+   "wall_time_ms": {
+    "median": 3.7647469998773886,
+    "min": 3.5673410002345918,
+    "max": 3.799829999479698
+   },
+   "run_statuses": [
+    "ok",
+    "ok",
+    "ok"
+   ],
+   "cache_counters": null,
+   "perf_note": "perf is not installed on this machine; counters unreadable",
+   "input": "4 bytes of stdin"
+  }
+ ],
+ "flags": [],
+ "provenance": {
+  "rules_hash": "sha256:34a95d23af29cd7b4f908e70217d574f78b65002318d4b79a3505822726496a6",
+  "assignment_spec_hash": "sha256:85528599693595a9fbb2878ef6a832d827d25eb9d1bd433c7ce381569f7f08a5",
+  "cache_key": "4c652c7b0beb05a0ea2841e08b1d5e12f519af7b182590abe6249395a5b390de",
+  "cache_status": "prepared_new",
+  "gcc": "gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+  "scoring_policy": "d3-v1",
+  "oracle_policy": "oracle-v1"
+ },
+ "limitations": [
+  "Sandbox isolation is process-level (limits, timeout, namespaces where probed), not a chroot; see README.",
+  "Static complexity and structure use heuristic source analysis; their evidence records the method used."
+ ]
+}

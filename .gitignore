@@ -1,0 +1,13 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+build/
+dist/
+# Runtime outputs (never commit generated evaluation artifacts as source)
+.cache/
+# Root-level runtime reports ONLY — a bare "reports/" pattern would also
+# swallow the src/autograder/reports/ package (it did; caught in Stage 14).
+/reports/
