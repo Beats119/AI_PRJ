@@ -18,11 +18,11 @@ dev = [
     "ruff>=0.4",
     "httpx>=0.27",
 ]
-web = [
+api = [
     "fastapi>=0.110",
     "uvicorn>=0.29",
-    "jinja2>=3.1",
     "python-multipart>=0.0.9",
+    "sqlalchemy>=2",
 ]
 
 [project.scripts]
@@ -48,6 +48,15 @@ line-length = 100
 # workflow: an analyzer that raises must become an ERROR result, never a
 # crashed evaluation; version probes likewise degrade to 'unknown'.
 "src/autograder/workflow.py" = ["BLE001"]
-# web: report listing skips unreadable files rather than failing the page;
-# B008 is FastAPI's documented dependency-injection idiom (Form/File).
-"src/autograder/web/app.py" = ["BLE001", "S112", "B008"]
+# api: B008 is FastAPI's documented dependency-injection idiom; the
+# ollama health probe treats any probe failure as 'unreachable'.
+"src/autograder/api/app.py" = ["B008", "BLE001"]
+# docker runner: the availability probe must treat ANY probe failure as
+# 'unavailable' (fail-closed probing), never propagate.
+"src/autograder/sandbox/docker_runner.py" = ["BLE001"]
+# db: timezone.utc written out (clearer than the 3.11+ UTC alias everywhere).
+"src/autograder/db/models.py" = ["UP017"]
+# services: a malformed rules payload must fall back to the default flag
+# threshold, and one run's unexpected failure is recorded on that run
+# (S110/BLE001 there are the deliberate resilience pattern, as in workflow).
+"src/autograder/services/evaluations.py" = ["BLE001", "S110", "UP017"]

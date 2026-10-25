@@ -40,7 +40,6 @@ from autograder.models.analysis import (
 )
 from autograder.models.execution import ExecutionStatus
 from autograder.models.report import EvaluationReport
-from autograder.sandbox.executor import Sandbox
 from autograder.sandbox.limits import ExecutionLimits
 from autograder.scoring.engine import score_results
 
@@ -88,7 +87,12 @@ def evaluate_submission(
     corpus_dir: str | Path | None = None,
     use_llm: bool = False,
     llm_client: LLMClient | None = None,
+    sandbox_backend: str | None = None,
+    progress=None,
 ) -> EvaluationReport:
+    """progress: optional callable(stage: str) invoked at real phase
+    boundaries (compiling / testing / analyzing / validating_evidence /
+    scoring / reporting) so callers can persist a truthful lifecycle."""
     import time
 
     source_path = Path(source_path)
@@ -118,13 +122,19 @@ def evaluate_submission(
         "cache_status": prep.status,
         "gcc": _gcc_version(),
         "scoring_policy": "d3-v1",
-        "oracle_policy": "oracle-v1",
+        "oracle_policy": "oracle-v2",
     }
+
+    def _stage(name: str) -> None:
+        if progress is not None:
+            progress(name)
 
     def finish(results: list[AnalyzerResult], submission_hash: str,
                evidence: list[dict]) -> EvaluationReport:
         import time
 
+        _stage("validating_evidence")
+        _stage("scoring")
         _ts = time.perf_counter()
         outcome = score_results(rules, results)
         timings["phases"]["scoring"] = round(time.perf_counter() - _ts, 4)
@@ -133,6 +143,7 @@ def evaluate_submission(
             f"{submission_hash}|{loaded_rules.rules_hash}|"
             f"{prep.spec.specification_hash}".encode()
         ).hexdigest()[:12]
+        _stage("reporting")
         return EvaluationReport(
             evaluation_id=eval_id,
             submission_name=source_path.name,
@@ -255,14 +266,18 @@ def evaluate_submission(
         )
 
     evidence: list[dict] = []
-    with Sandbox() as sandbox:
+    from autograder.sandbox.docker_runner import make_sandbox
+
+    with make_sandbox(sandbox_backend) as sandbox:
         import time
 
+        _stage("compiling")
         _tc = time.perf_counter()
         comp = sandbox.compile(source_path, flags=FIRST_PASS_FLAGS)
         timings["phases"]["compile"] = round(time.perf_counter() - _tc, 4)
         if not comp.success:
             flags.append("compile_error")
+            _stage("analyzing")
             results = []
             for m in rules.metrics:
                 if m.name in _EXEC_METRICS:
@@ -297,6 +312,7 @@ def evaluate_submission(
         )
         if smoke.status is ExecutionStatus.TIMEOUT:
             flags.append("suspected_infinite_loop")
+            _stage("analyzing")
             results = []
             for m in rules.metrics:
                 if m.name in _EXEC_METRICS:
@@ -311,6 +327,8 @@ def evaluate_submission(
             return finish(results, comp.source_hash, evidence)
 
         # --- stage 4: all analyzers ---------------------------------------
+        _stage("testing")
+        _stage("analyzing")
         results = [run_analyzer(m) for m in rules.metrics]
         try:
             profile = measure_profile(

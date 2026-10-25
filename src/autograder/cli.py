@@ -211,26 +211,30 @@ def _cmd_benchmark(args: argparse.Namespace) -> int:
     return 0
 
 
-def _cmd_serve(args: argparse.Namespace) -> int:
+def _cmd_api(args: argparse.Namespace) -> int:
     try:
         import uvicorn
     except ImportError:
         print(
-            "the web UI needs the 'web' extra: pip install -e \".[web]\"",
+            "the v2 API needs the 'api' extra: pip install -e \".[api]\"",
             file=sys.stderr,
         )
         return 2
-    from autograder.web.app import create_app
+    from autograder.api.app import create_api_app
 
-    app = create_app(
-        rules_path=Path(args.rules),
+    app = create_api_app(
+        data_dir=Path(args.data_dir),
         models_path=Path(args.models),
-        cache_dir=Path(args.cache_dir),
-        assignments_dir=Path(args.assignments_dir),
-        reports_dir=Path(args.out),
-        corpus_dir=Path(args.corpus_dir) if args.corpus_dir else None,
     )
-    print(f"AutoGrader UI on http://{args.host}:{args.port} (Ctrl+C to stop)")
+    frontend = Path("frontend/dist")
+    if frontend.is_dir():  # serve the built dashboard alongside the API
+        from fastapi.staticfiles import StaticFiles
+
+        app.mount(
+            "/app", StaticFiles(directory=frontend, html=True), name="frontend"
+        )
+    print(f"AutoGrader API on http://{args.host}:{args.port} "
+          f"(dashboard at /app when the frontend is built)")
     uvicorn.run(app, host=args.host, port=args.port, log_level="warning")
     return 0
 
@@ -269,17 +273,6 @@ def build_parser() -> argparse.ArgumentParser:
     ev.add_argument("--use-llm", action="store_true")
     ev.set_defaults(func=_cmd_evaluate)
 
-    sv = sub.add_parser("serve", help="run the web UI")
-    sv.add_argument("--host", default="127.0.0.1")
-    sv.add_argument("--port", type=int, default=8000)
-    sv.add_argument("--rules", default="configs/example_rules.yaml")
-    sv.add_argument("--models", default=str(DEFAULT_MODELS))
-    sv.add_argument("--cache-dir", default=str(DEFAULT_CACHE))
-    sv.add_argument("--assignments-dir", default="examples/assignments")
-    sv.add_argument("--out", default="reports", help="reports directory")
-    sv.add_argument("--corpus-dir", default=None)
-    sv.set_defaults(func=_cmd_serve)
-
     c = sub.add_parser("cache", help="inspect or invalidate the assignment cache")
     c.add_argument("--cache-dir", default=str(DEFAULT_CACHE))
     csub = c.add_subparsers(dest="cache_command", required=True)
@@ -288,6 +281,13 @@ def build_parser() -> argparse.ArgumentParser:
     ci = csub.add_parser("invalidate")
     ci.add_argument("--assignment-id", required=True)
     ci.set_defaults(func=_cmd_cache)
+
+    ap = sub.add_parser("api", help="run the v2 JSON API (+ built dashboard)")
+    ap.add_argument("--host", default="127.0.0.1")
+    ap.add_argument("--port", type=int, default=8000)
+    ap.add_argument("--data-dir", default=".autograder-data")
+    ap.add_argument("--models", default=str(DEFAULT_MODELS))
+    ap.set_defaults(func=_cmd_api)
 
     b = sub.add_parser("benchmark", help="measure stage timings and cache reuse")
     b.add_argument("--assignment", required=True)

@@ -20,7 +20,7 @@ def test_benchmark_proves_cache_reuse(tmp_path):
         repetitions=1,
     )
     miss, hit = results["setup_cache_miss"], results["setup_cache_hit"]
-    assert miss["validation_executions"] == [24]  # setup really validated
+    assert miss["validation_executions"] == [0]  # oracle-v2: derivation only
     assert hit["validation_executions"] == 0  # the hit did NO setup work
     assert hit["seconds_median"] < miss["seconds_median"]
     by_name = {e["submission"]: e for e in results["evaluations"]}

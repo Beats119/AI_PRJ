@@ -54,7 +54,7 @@ def test_missing_contract_sections_become_unresolved(tmp_path):
     joined = " ".join(spec.unresolved_questions)
     assert "no ## Input section" in joined
     assert "no ## Output section" in joined
-    assert "no instructor cases and no reference" in joined
+    assert "no instructor-provided examples" in joined
 
 
 def test_missing_files_are_actionable_errors(tmp_path):
@@ -87,7 +87,9 @@ def test_generation_respects_candidate_cap():
     assert report.discarded_over_cap > 0
 
 
-def test_oracle_trusts_via_reference_and_derivation():
+def test_oracle_trusts_via_derivation_only():
+    # oracle-v2 (master prompt §5.2): no reference implementation exists in
+    # the trust model at all. Trust = instructor + independent derivation.
     pkg = load_assignment_package(EXAMPLE)
     spec = build_spec(pkg)
     candidates, _ = generate_candidates(
@@ -95,15 +97,17 @@ def test_oracle_trusts_via_reference_and_derivation():
         existing_inputs={" ".join(c.input.split()) for c in pkg.instructor_cases},
     )
     result = verify_candidates(candidates, pkg, spec, _rules().rules.sufficiency)
-    assert result.reference_trusted is True
     assert result.sufficiency.sufficient is True
     assert result.sufficiency.total_trusted == 24
+    assert result.validation_executions == 0  # derivation is computation
     generated = [t for t in result.suite if t.test_id.startswith("gen-")]
     assert all(
-        t.validation_method == "reference_run+independent_derivation" for t in generated
+        t.validation_method == "independent_derivation" for t in generated
     )
     instructor = [t for t in result.suite if t.test_id.startswith("inst-")]
     assert all(t.validation_method == "instructor_provided" for t in instructor)
+    cond = {c["name"]: c["passed"] for c in result.sufficiency.conditions}
+    assert cond["no_reference_oracle"] is True
 
 
 def test_u07_boundary_expected_output_is_mathematically_correct():
@@ -119,7 +123,10 @@ def test_u07_boundary_expected_output_is_mathematically_correct():
     assert big.expected_output == "4000000000"
 
 
-def test_bad_reference_is_rejected_as_trust_source(tmp_path):
+def test_reference_file_in_package_is_never_consulted(tmp_path):
+    # A (deliberately WRONG) reference.c sitting in the package directory
+    # must have zero effect: it is not loaded, not compiled, not run, and
+    # the resulting suite is identical to the no-reference suite.
     pkg_dir = tmp_path / "pkg"
     pkg_dir.mkdir()
     (pkg_dir / "assignment.md").write_text((EXAMPLE / "assignment.md").read_text())
@@ -132,37 +139,21 @@ def test_bad_reference_is_rejected_as_trust_source(tmp_path):
     )
     pkg = load_assignment_package(pkg_dir)
     spec = build_spec(pkg)
+    assert any("never used" in p for p in spec.provenance)
     candidates, _ = generate_candidates(pkg, _rules().rules.generation)
     result = verify_candidates(candidates, pkg, spec, _rules().rules.sufficiency)
-    assert result.reference_trusted is False
-    assert any("rejected as a trust source" in d for d in result.diagnostics)
-    # Derivation still independently establishes trust:
-    generated = [t for t in result.suite if t.test_id.startswith("gen-")]
-    assert generated and all(
-        t.validation_method == "independent_derivation" for t in generated
+    baseline_pkg = load_assignment_package(EXAMPLE)
+    baseline_candidates, _ = generate_candidates(
+        baseline_pkg, _rules().rules.generation
     )
+    baseline = verify_candidates(
+        baseline_candidates, baseline_pkg, build_spec(baseline_pkg),
+        _rules().rules.sufficiency,
+    )
+    mine = {(t.input_data, t.expected_output) for t in result.suite}
+    base = {(t.input_data, t.expected_output) for t in baseline.suite}
+    assert mine == base
     assert result.sufficiency.sufficient is True
-
-
-def test_contradicting_reference_rejects_the_candidate(tmp_path):
-    pkg_dir = tmp_path / "pkg"
-    pkg_dir.mkdir()
-    (pkg_dir / "assignment.md").write_text((EXAMPLE / "assignment.md").read_text())
-    (pkg_dir / "spec.yaml").write_text((EXAMPLE / "spec.yaml").read_text())
-    (pkg_dir / "tests.yaml").write_text((EXAMPLE / "tests.yaml").read_text())
-    (pkg_dir / "reference.c").write_text(
-        "#include <stdio.h>\nint main(void){ long long a,b;"
-        " if(scanf(\"%lld %lld\",&a,&b)!=2) return 1;"
-        " if(a==2 && b==3){ printf(\"999\\n\"); return 0; }"
-        " printf(\"%lld\\n\", a+b); return 0; }\n"  # contradicts only '2 3'
-    )
-    pkg = load_assignment_package(pkg_dir)
-    spec = build_spec(pkg)
-    candidates, _ = generate_candidates(pkg, _rules().rules.generation)
-    result = verify_candidates(candidates, pkg, spec, _rules().rules.sufficiency)
-    assert result.reference_trusted is True  # passed all instructor cases
-    rejected_inputs = {" ".join(t.input_data.split()) for t in result.rejected}
-    assert "2 3" in rejected_inputs  # contradiction => rejected, never voted on
 
 
 def test_llm_expected_output_never_becomes_trust_by_itself(tmp_path):
@@ -204,8 +195,8 @@ def test_llm_proposed_input_becomes_trusted_only_via_independent_check():
         candidates, pkg, build_spec(pkg), _rules().rules.sufficiency
     )
     verified = [t for t in result.suite if t.input_data == "3 4\n"]
-    assert verified[0].expected_output == "7"  # corrected by independent sources
-    assert verified[0].validation_method == "reference_run+independent_derivation"
+    assert verified[0].expected_output == "7"  # corrected by derivation
+    assert verified[0].validation_method == "independent_derivation"
     assert verified[0].counts_as_trusted
     assert client.usage.total_calls == 1
     assert client.usage.calls[0].transport == "fake"  # labelled honestly

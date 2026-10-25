@@ -43,5 +43,5 @@ def test_all_commands_are_implemented():
     choices = actions["command"].choices
     assert set(choices) == {
         "doctor", "validate-rules", "prepare-assignment", "evaluate",
-        "cache", "benchmark", "serve",
+        "cache", "benchmark", "api",
     }

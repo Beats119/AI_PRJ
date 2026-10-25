@@ -3,8 +3,9 @@
 Cache key material (EVERY input that can change the suite):
   normalized specification hash (includes instructor cases), full rules hash,
   generation + sufficiency configuration, generator id + version, oracle
-  policy version, comparison policy, reference implementation hash, and the
-  model identity when LLM proposals are enabled ("llm:disabled" otherwise).
+  policy version, comparison policy, and the model identity when LLM
+  proposals are enabled ("llm:disabled" otherwise). (oracle-v2 removed the
+  reference-implementation hash: references are never runtime inputs.)
 
 Only a suite that passes the D-1 sufficiency bar is ever stored. A failed
 setup stores nothing and can therefore never overwrite a valid entry.
@@ -12,7 +13,6 @@ setup stores nothing and can therefore never overwrite a valid entry.
 
 from __future__ import annotations
 
-import hashlib
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -42,19 +42,12 @@ class PrepareResult:
     validation_executions: int = 0
 
 
-def _file_hash(path: Path | None) -> str:
-    if path is None:
-        return "none"
-    return "sha256:" + hashlib.sha256(path.read_bytes()).hexdigest()
-
-
 def compute_cache_key(
     *,
     spec: AssignmentSpec,
     loaded_rules: LoadedRules,
     package_generator: str,
     comparison: str,
-    reference_path: Path | None,
     models: ModelsConfig,
     use_llm: bool,
 ) -> str:
@@ -67,7 +60,6 @@ def compute_cache_key(
         "generator_version": GENERATOR_VERSION,
         "oracle_policy_version": ORACLE_POLICY_VERSION,
         "comparison": comparison,
-        "reference_hash": _file_hash(reference_path),
         "model_identity": (
             f"{models.llm.backend}:{models.llm.model}:t{models.llm.temperature}"
             f":s{models.llm.seed}"
@@ -94,7 +86,6 @@ def prepare_assignment(
         loaded_rules=loaded_rules,
         package_generator=package.config.generator,
         comparison=package.config.comparison,
-        reference_path=package.reference_path,
         models=models,
         use_llm=use_llm,
     )
@@ -164,8 +155,6 @@ def prepare_assignment(
                 "rules_hash": loaded_rules.rules_hash,
                 "generator_version": GENERATOR_VERSION,
                 "oracle_policy_version": ORACLE_POLICY_VERSION,
-                "reference_hash": _file_hash(package.reference_path),
-                "reference_trusted": verification.reference_trusted,
             },
             "generation_report": gen_dict,
             "llm_usage": usage_dict,

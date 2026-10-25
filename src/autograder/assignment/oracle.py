@@ -3,38 +3,32 @@
 Trust categories (see docs/TRUST_MODEL.md):
   instructor_provided       trusted — the instructor stated this expected
                             output; the strongest source we have.
-  reference_run             trusted — produced by a reference implementation
-                            that itself passed every instructor case.
   independent_derivation    trusted — computed by a method independent of
                             both the student code and the LLM from a contract
                             that fully determines the output (e.g. integer
                             addition in arbitrary precision).
   llm_unverified            NEVER trusted — the LLM proposed it and nothing
                             independent confirmed it. Excluded from scoring.
-  rejected                  invalid input, contradiction between independent
-                            sources, or a broken oracle run. Not in the suite.
+  rejected                  invalid input or no justifiable expected output.
 
-A candidate becomes trusted only through a source above that is independent
-of the candidate's origin. An LLM that proposes both an input and its
-expected output can therefore never make a test trusted by itself.
+Reference implementations are NEVER used as oracles (master prompt §5.2):
+AutoGrader does not require, request, generate, or compare against a
+reference solution. A candidate becomes trusted only through a source that
+is independent of the candidate's origin, so an LLM that proposes both an
+input and its expected output can never make a test trusted by itself.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from pathlib import Path
 
 from autograder.assignment.specification import AssignmentPackage
 from autograder.assignment.test_generation import INT32_MAX, INT32_MIN, parse_int_pair
-from autograder.comparison import compare_outputs
 from autograder.config.schema import SufficiencyConfig
 from autograder.models.assignment import AssignmentSpec
-from autograder.models.execution import ExecutionStatus
 from autograder.models.tests import TestCase, TrustStatus
-from autograder.sandbox.executor import Sandbox
-from autograder.sandbox.limits import ExecutionLimits
 
-ORACLE_POLICY_VERSION = "oracle-v1"
+ORACLE_POLICY_VERSION = "oracle-v2"
 
 
 @dataclass
@@ -51,7 +45,6 @@ class VerificationResult:
     suite: list[TestCase]  # trusted + untrusted (rejected are separate)
     rejected: list[TestCase]
     sufficiency: SufficiencyReport
-    reference_trusted: bool | None  # None = no reference present
     validation_executions: int
     diagnostics: list[str] = field(default_factory=list)
 
@@ -94,8 +87,6 @@ def check_sufficiency(
     spec: AssignmentSpec,
     package: AssignmentPackage,
     cfg: SufficiencyConfig,
-    reference_trusted: bool | None,
-    reference_used: bool,
 ) -> SufficiencyReport:
     pool_categories = {t.category for t in suite}
     applicable = applicable_categories(spec, package, pool_categories)
@@ -153,14 +144,16 @@ def check_sufficiency(
             "detail": "provenance, verification method and comparison policy recorded",
         }
     )
-    # (5) a reference used as a trust source passed the authoritative examples
+    # (5) no trusted case was produced by a reference implementation
     conditions.append(
         {
-            "name": "reference_validated_before_use",
-            "passed": (not reference_used) or (reference_trusted is True),
-            "detail": "reference not used"
-            if not reference_used
-            else f"reference_trusted={reference_trusted}",
+            "name": "no_reference_oracle",
+            "passed": all(
+                "reference" not in t.validation_method for t in trusted
+            ),
+            "detail": "reference implementations are never used as oracles "
+            "(master prompt §5.2); trust comes from instructor examples and "
+            "independent derivation only",
         }
     )
     return SufficiencyReport(
@@ -180,7 +173,6 @@ def verify_candidates(
 ) -> VerificationResult:
     policy = package.config.comparison_policy
     diagnostics: list[str] = []
-    executions = 0
 
     # Instructor cases enter as trusted directly.
     suite: list[TestCase] = []
@@ -198,43 +190,6 @@ def verify_candidates(
                 requirement_coverage=c.category,
             )
         )
-
-    # Validate the reference (if any) against ALL instructor cases first.
-    reference_trusted: bool | None = None
-    reference_used = False
-    ref_binary: Path | None = None
-    sandbox: Sandbox | None = None
-    if package.reference_path is not None:
-        sandbox = Sandbox()
-        comp = sandbox.compile(package.reference_path)
-        if not comp.success:
-            diagnostics.append(
-                f"reference implementation does not compile; rejected as a trust "
-                f"source: {comp.diagnostics[:200]}"
-            )
-            reference_trusted = False
-        else:
-            ref_binary = comp.binary_path
-            ok = True
-            for case in package.instructor_cases:
-                res = sandbox.run(
-                    ref_binary,
-                    test_id="refcheck",
-                    submission_hash=comp.source_hash,
-                    input_data=case.input,
-                    limits=ExecutionLimits(wall_time_s=2.0),
-                )
-                executions += 1
-                if res.status is not ExecutionStatus.OK or not compare_outputs(
-                    case.expected, res.stdout, policy
-                ):
-                    ok = False
-                    diagnostics.append(
-                        f"reference disagrees with instructor case input={case.input!r} "
-                        f"expected={case.expected!r} got={res.stdout!r} "
-                        f"status={res.status.value}; reference rejected as a trust source"
-                    )
-            reference_trusted = ok
 
     deriver = DERIVERS.get(package.config.generator)
     rejected: list[TestCase] = []
@@ -259,43 +214,7 @@ def verify_candidates(
             reject(cand, "input violates the assignment's input constraints")
             continue
         derived = deriver(cand.input_data) if deriver else None
-        ref_out: str | None = None
-        if ref_binary is not None and reference_trusted:
-            assert sandbox is not None
-            res = sandbox.run(
-                ref_binary,
-                test_id=cand.test_id,
-                submission_hash="reference",
-                input_data=cand.input_data,
-                limits=ExecutionLimits(wall_time_s=2.0),
-            )
-            executions += 1
-            if res.status is ExecutionStatus.OK:
-                ref_out = res.stdout.strip()
-                reference_used = True
-            else:
-                reject(cand, f"reference run failed ({res.status.value})")
-                continue
-        if derived is not None and ref_out is not None:
-            if compare_outputs(derived, ref_out, policy):
-                suite.append(
-                    cand.model_copy(
-                        update={
-                            "expected_output": derived,
-                            "trust_status": TrustStatus.TRUSTED,
-                            "validation_method": "reference_run+independent_derivation",
-                            "provenance": f"{cand.provenance}; verified by reference run "
-                            "and independent derivation",
-                        }
-                    )
-                )
-            else:
-                reject(
-                    cand,
-                    f"independent sources contradict (derivation={derived!r}, "
-                    f"reference={ref_out!r})",
-                )
-        elif derived is not None:
+        if derived is not None:
             suite.append(
                 cand.model_copy(
                     update={
@@ -303,25 +222,16 @@ def verify_candidates(
                         "trust_status": TrustStatus.TRUSTED,
                         "validation_method": "independent_derivation",
                         "provenance": f"{cand.provenance}; verified by independent "
-                        "derivation from the contract",
-                    }
-                )
-            )
-        elif ref_out is not None:
-            suite.append(
-                cand.model_copy(
-                    update={
-                        "expected_output": ref_out,
-                        "trust_status": TrustStatus.TRUSTED,
-                        "validation_method": "reference_run",
-                        "provenance": f"{cand.provenance}; verified by trusted "
-                        "reference run",
+                        "derivation from the contract (no reference implementation "
+                        "is used)",
                     }
                 )
             )
         else:
-            # Nothing independent can verify this candidate. An LLM-proposed
-            # expected output stays an unverified claim, never trust.
+            # Nothing independent can justify this candidate's expected
+            # output. An LLM-proposed expected output stays an unverified
+            # claim, never trust (and with no reference oracle, there is
+            # deliberately no second path).
             suite.append(
                 cand.model_copy(
                     update={
@@ -332,12 +242,8 @@ def verify_candidates(
                     }
                 )
             )
-    if sandbox is not None:
-        sandbox.__exit__()  # close the reference workspace
 
-    sufficiency = check_sufficiency(
-        suite, spec, package, sufficiency_cfg, reference_trusted, reference_used
-    )
+    sufficiency = check_sufficiency(suite, spec, package, sufficiency_cfg)
     if not sufficiency.sufficient:
         failed = [c["name"] for c in sufficiency.conditions if not c["passed"]]
         diagnostics.append(f"suite below the D-1 sufficiency bar: {failed}")
@@ -345,7 +251,6 @@ def verify_candidates(
         suite=suite,
         rejected=rejected,
         sufficiency=sufficiency,
-        reference_trusted=reference_trusted,
-        validation_executions=executions,
+        validation_executions=0,  # derivation is pure computation; no runs
         diagnostics=diagnostics,
     )

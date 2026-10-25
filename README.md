@@ -1,102 +1,84 @@
-# AutoGrader: A Rule-Driven Evaluator for C Programs
+# AutoGrader: Evidence-Based Grading for C Programs
 
-An agent that grades student C programs automatically: it takes a student's C
-submission and a set of grading rules the instructor has written, runs the
-submission safely, checks it against every rule, and returns one overall grade
-together with feedback. Contract: **same submission + same rules → same grade.**
+AutoGrader takes an assignment (problem statement + instructor examples +
+a JSON rubric) and a **batch** of student C submissions, and produces one
+consolidated, evidence-backed result set: grades, per-test failures with
+input/expected/actual, rubric traces, and similarity flags for human
+review. Contract: **same submission + same assignment version + same
+rules → same grade**, deterministically.
 
-## Install (development)
+It deliberately does **not** use reference solutions: expected outputs
+are trusted only when the instructor stated them or they are
+independently derived from the contract (see `docs/TRUST_MODEL.md`).
+
+## Quick start (v2 dashboard)
 
 ```bash
+# backend
 python3 -m venv .venv
-.venv/bin/pip install -e ".[dev]"
+.venv/bin/pip install -e ".[dev,api]"
+# frontend
+cd frontend && npm install && npm run build && cd ..
+# run (API + built dashboard at /app)
+.venv/bin/autograder api            # http://127.0.0.1:8000/app/
 ```
 
-## Commands
+Development mode: `autograder api` in one terminal,
+`cd frontend && npm run dev` in another (Vite proxies `/api`).
+
+Then: create an assignment → load the worked example → create the
+version (the trusted suite is prepared and shown with its sufficiency
+evidence) → activate it → upload a batch of `.c` files → Evaluate →
+investigate any row → review similarity flags.
+
+## CLI (engine, unchanged)
 
 ```bash
-# Check this machine: compiler, optional tools, Ollama, sandbox capabilities
-autograder doctor [--json]
-
-# Validate an instructor rules file (actionable errors, no silent defaults)
+autograder doctor [--json]                 # environment + capability truth
 autograder validate-rules --rules configs/example_rules.yaml
+autograder prepare-assignment --assignment examples/assignments/add_two_integers --rules configs/example_rules.yaml
+autograder evaluate examples/submissions/correct.c --assignment examples/assignments/add_two_integers --rules configs/example_rules.yaml --out reports
+autograder cache list | invalidate <key>
+autograder benchmark --assignment examples/assignments/add_two_integers --rules configs/example_rules.yaml --submissions-dir examples/submissions --out bench.json
 ```
-
-Coming in later approved stages (the CLI reports this honestly until then):
-`prepare-assignment` (Stage 6), `evaluate` (Stage 9), `cache list/invalidate`
-(Stage 6), `benchmark` (Stage 12). A polished web UI is staged after the core
-engine (Stages 9–11) and is part of the final acceptance criteria.
 
 ## Configuration
 
-- `configs/example_rules.yaml` — the assignment PDF's worked example
-  (add_two_integers, 9 metrics, weights sum to 1.00). Rules live **outside**
-  the code; changing a weight or threshold never requires editing the agent.
-- `configs/models.yaml` — LLM configuration. Default backend is a local
-  Ollama server with Llama 3.1; bounded calls only (at most 2 during
-  assignment setup); no core grade depends on an unverified LLM judgement.
+- Rules live **outside** the code (YAML or JSON, strict schema):
+  `configs/example_rules.yaml` is the assignment PDF's worked example
+  (9 metrics, weights sum to 1.00). The dashboard editor is JSON.
+- `.env.example` lists the environment knobs: Ollama base URL/model,
+  sandbox backend (`auto|docker|process`), fail-closed switch, data dir.
+- The LLM (Ollama, local) is bounded and advisory only; the deterministic
+  pipeline is complete without it.
 
-## Build status
+## Tests
 
-- Stage 1–2: requirements traceability + architecture plan (approved).
-- Stage 3–4: project environment, CLI (`doctor`, `validate-rules`), typed
-  data contracts, strict config validation, and the deterministic scoring
-  engine implementing the approved D-3 missing-evidence policy
-  (no universal weight redistribution; insufficient trusted correctness
-  evidence yields an incomplete result, never an ordinary grade).
-- Stage 5: sandbox — controlled compilation (argv only, source copied under
-  a fixed safe name) and safe execution (prlimit resource limits, wall-clock
-  timeout with process-group kill, bounded output, scrubbed environment,
-  per-submission temp workspace, network namespace only where a live probe
-  proves it works; the isolation actually applied is reported in every
-  result). This is process-level isolation for a classroom/lab setting, not
-  a chroot — see the executor module docstring for the honest limits.
-- Stage 6–7: assignment setup and correctness — spec builder from explicit
-  package inputs (ambiguities recorded, never invented), bounded candidate
-  generation (D-2: 1 round, ≤40 candidates, ≤2 setup LLM calls, Ollama-only
-  client with hard budgets and usage accounting), oracle verification with
-  the trust model in `docs/TRUST_MODEL.md` (instructor / validated reference
-  / independent derivation can create trust; LLM claims never can), the D-1
-  sufficiency bar, a persistent versioned cache (atomic stores, integrity
-  re-verified on load, corrupt entries quarantined, valid entries never
-  overwritten), and the correctness + logical analyzers over trusted tests
-  only. CLI: `prepare-assignment`, `cache list|invalidate`, and `evaluate`
-  (correctness scope — it writes `correctness_report.json` and deliberately
-  produces NO overall grade until the Stage 9 workflow runs every analyzer
-  under the D-3 policy).
-- Stage 8: the remaining analyzers — syntax (gcc warning evidence, strict
-  -Werror compile + warning counts), structure/modularity (deterministic
-  heuristic C parser; per-function cyclomatic/length findings WITH fix
-  suggestions), complexity (static loop-nesting estimate + empirical growth
-  classification that refuses noisy/tiny timings and reports disagreement as
-  inconclusive), memory safety (ASan+UBSan over trusted tests; toolchain
-  probed first — a broken toolchain is an environment error, never a student
-  score; leaks included), readability (deterministic rubric; optional LLM
-  prose is advisory-only per D-4 and cannot move the score), originality
-  (identifier-canonicalized token-shingle similarity; a flag means "human
-  review", never "proven copying"). Profiling (`analyzers/profiling.py`)
-  measures real wall-times through the sandbox and reports hardware
-  cache counters only when `perf` genuinely reads them — otherwise it says
-  why they are unreadable (on this VM: perf is not installed).
-- Stage 9–11: the full workflow (`workflow.py`: setup gate → sandboxed
-  compile → smoke run with the PDF's `suspected_infinite_loop` path → every
-  configured analyzer exactly once → D-3 scoring), canonical reports
-  rendered as JSON + HTML + TXT from the single EvaluationReport
-  (`reports/`), the remaining sample submissions (`timeout.c`,
-  `compile_error.c`) with retained real outputs in `examples/outputs/`, and
-  the web UI (`autograder serve`): evaluate form, report pages with
-  JSON/TXT downloads, assignments/cache page with invalidation, and a
-  doctor page. The UI calls the same workflow as the CLI — a parity test
-  proves identical grades for identical inputs. Sample grades on this
-  machine (corpus = examples/submissions): correct 100.0 complete,
-  incorrect 85.2 complete, timeout 53.0 partial, compile_error 43.0 partial.
-- Worked example included: `examples/assignments/add_two_integers/`
-  (package + reference implementing the U-07 wider-type contract) and
-  `examples/submissions/correct.c` / `incorrect.c` (the PDF's submission,
-  which fails on large operands).
-- Tests: `python -m pytest` (unit tests for config, contracts, scoring —
-  one test per D-3 case — LLM budgets, spec/oracle/cache; security tests run
-  real adversarial programs through the sandbox).
+```bash
+.venv/bin/python -m pytest              # backend: 117 tests (engine, services, API, security)
+.venv/bin/ruff check src tests
+cd frontend && npm run test             # 11 Vitest tests
+cd frontend && npm run build            # production build (tsc + vite)
+```
 
-See `docs/` (added as stages complete) for architecture, flow, requirements
-traceability, installation, benchmarks, and limitations.
+Coverage (2026-10-24): 87% overall; scoring 86%, oracle 94%, services
+88–91%, state machine 94%.
+
+## Documentation
+
+- `docs/architecture.md` — v2 system shape and role mapping
+- `docs/evaluation-flow.md` — the dashboard flow, step by step
+- `docs/api.md` — every route
+- `docs/security.md` — sandbox backends, fail-closed behaviour, app controls
+- `docs/benchmark.md` — measured timings on this machine
+- `docs/TRUST_MODEL.md` — how a test earns trust (oracle-v2)
+- `docs/LIMITATIONS.md`, `docs/USEFULNESS_AND_LIMITATIONS.md` — honest limits
+- `docs/V2_COMPLETION_REPORT.md` — what was built, deviations, evidence
+- `docs/decisions.md` — architectural decisions and deviations
+- `IMPLEMENTATION_PLAN.md` — the v2 milestone plan and its audit
+
+## Deliberate non-features
+
+No student/instructor portals, accounts, roles, or LMS integration; no
+reference solutions; similarity is evidence for review, never an
+automatic verdict; no grade depends on an unverified LLM judgement.

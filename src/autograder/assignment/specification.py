@@ -6,7 +6,9 @@ Assignment package layout (a directory):
   spec.yaml       machine fields: assignment_id, generator, comparison,
                   optional input range, optional invalid-input behaviour
   tests.yaml      optional instructor-provided cases {input, expected, category}
-  reference.c     optional reference implementation
+
+A reference.c file, if present, is ignored by design: reference
+implementations are never runtime inputs (master prompt §5.2).
 
 Nothing is inferred silently: missing contract pieces are recorded as
 unresolved questions on the spec, and they weaken what the oracle may claim.
@@ -51,7 +53,6 @@ class AssignmentPackage(BaseModel):
     config: AssignmentPackageConfig
     statement_sections: dict[str, str] = Field(default_factory=dict)
     instructor_cases: list[InstructorCase] = Field(default_factory=list)
-    reference_path: Path | None = None
     source_dir: Path
 
     model_config = {"arbitrary_types_allowed": True}
@@ -114,12 +115,14 @@ def load_assignment_package(assignment_dir: str | Path) -> AssignmentPackage:
         except (yaml.YAMLError, ValidationError) as exc:
             raise ConfigError([f"{tests_path}: {exc}"]) from exc
 
-    reference = root / "reference.c"
+    # NOTE: a reference.c in the directory is deliberately NOT loaded.
+    # Reference implementations are never runtime inputs (master prompt
+    # §5.2): the oracle trusts instructor examples and independent
+    # derivation only.
     return AssignmentPackage(
         config=config,
         statement_sections=_split_sections(md_path.read_text(encoding="utf-8")),
         instructor_cases=cases,
-        reference_path=reference if reference.exists() else None,
         source_dir=root,
     )
 
@@ -131,10 +134,11 @@ def build_spec(package: AssignmentPackage) -> AssignmentSpec:
         unresolved.append("assignment.md has no ## Input section: input contract unknown")
     if "output" not in s:
         unresolved.append("assignment.md has no ## Output section: output contract unknown")
-    if not package.instructor_cases and package.reference_path is None:
+    if not package.instructor_cases:
         unresolved.append(
-            "no instructor cases and no reference implementation: "
-            "no authoritative trust source is available"
+            "no instructor-provided examples: trust rests entirely on "
+            "independent derivation from the stated contract, which the "
+            "D-1 sufficiency bar must still confirm"
         )
     constraints = [
         line.strip("- ").strip()
@@ -168,7 +172,7 @@ def build_spec(package: AssignmentPackage) -> AssignmentSpec:
             f"generator: {package.config.generator}",
             f"comparison: {package.config.comparison}",
             f"instructor cases: {len(package.instructor_cases)}",
-            f"reference: {'present' if package.reference_path else 'absent'}",
+            "reference implementation: never used (master prompt §5.2)",
         ],
     )
     digest = canonical_hash(spec.model_dump(mode="json", exclude={"specification_hash"}))

@@ -39,7 +39,9 @@ def _analyze(source: Path, suite, limits=LIMITS):
 def test_cache_miss_then_hit_with_identical_suite(tmp_path):
     first = _prepare(tmp_path / "cache")
     assert first.status == "prepared_new"
-    assert first.validation_executions > 0  # reference really ran
+    # oracle-v2: trust is computational (derivation), so setup performs no
+    # sandbox executions at all — on a miss OR a hit.
+    assert first.validation_executions == 0
     second = _prepare(tmp_path / "cache")
     assert second.status == "prepared_cache_hit"
     assert second.validation_executions == 0  # setup work was skipped
